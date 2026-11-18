@@ -1,0 +1,153 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    font-family: 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+.font-quran {
+  font-family: 'Amiri Quran', 'Amiri', 'Traditional Arabic', serif;
+  font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+}
+
+.font-amiri {
+  font-family: 'Amiri', serif;
+}
+
+.font-ui {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle archival scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 113, 108, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 113, 108, 0.45);
+}
+
+/* iOS Liquid Glass Frosted Surfaces */
+.ios-glass {
+  background: rgba(253, 250, 244, 0.58);
+  backdrop-filter: blur(28px) saturate(210%);
+  -webkit-backdrop-filter: blur(28px) saturate(210%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 4px 20px -6px rgba(28, 25, 23, 0.06);
+}
+
+.dark .ios-glass {
+  background: rgba(16, 22, 20, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+    0 6px 24px -6px rgba(0, 0, 0, 0.45);
+}
+
+.ios-glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 253, 249, 0.64) 0%,
+    rgba(249, 244, 234, 0.46) 100%
+  );
+  backdrop-filter: blur(26px) saturate(200%);
+  -webkit-backdrop-filter: blur(26px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(214, 205, 187, 0.35),
+    0 12px 34px -12px rgba(28, 25, 23, 0.11);
+}
+
+.dark .ios-glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(28, 37, 33, 0.62) 0%,
+    rgba(17, 23, 20, 0.5) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+    0 16px 38px -12px rgba(0, 0, 0, 0.55);
+}
+
+.ios-glass-dock {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 253, 248, 0.72) 0%,
+    rgba(246, 240, 229, 0.62) 100%
+  );
+  backdrop-filter: blur(32px) saturate(220%);
+  -webkit-backdrop-filter: blur(32px) saturate(220%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(214, 205, 187, 0.35),
+    0 18px 42px -10px rgba(28, 25, 23, 0.18);
+}
+
+.dark .ios-glass-dock {
+  background: linear-gradient(
+    180deg,
+    rgba(26, 35, 31, 0.74) 0%,
+    rgba(15, 21, 18, 0.66) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 20px 44px -10px rgba(0, 0, 0, 0.65);
+}
+
+.ios-glass-input {
+  background: rgba(255, 253, 249, 0.55);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(214, 205, 187, 0.7);
+  box-shadow: inset 0 1px 2px rgba(28, 25, 23, 0.04);
+}
+
+.dark .ios-glass-input {
+  background: rgba(22, 30, 27, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.ios-spring {
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.ios-spring:active {
+  transform: scale(0.97);
+}

@@ -1,0 +1,25 @@
+{
+  "appName": "المصحف الجامع",
+  "hijriDate": "٧ جمادى الآخرة ١٤٤٨ هـ",
+  "gregorianDate": "١٧ نوفمبر ٢٠٢٦",
+  "location": "مكة المكرمة، السعودية",
+  "nextPrayerLabel": "الصلاة القادمة",
+  "nextPrayerName": "الفجر",
+  "nextPrayerTime": "05:14",
+  "remainingLabel": "متبقي ٠٣ س ١٢ د",
+  "lastUpdatedLabel": "محدّث تلقائياً",
+  "prayers": {
+    "fajrLabel": "الفجر",
+    "fajr": "05:14",
+    "sunriseLabel": "الشروق",
+    "sunrise": "06:34",
+    "dhuhrLabel": "الظهر",
+    "dhuhr": "12:07",
+    "asrLabel": "العصر",
+    "asr": "15:18",
+    "maghribLabel": "المغرب",
+    "maghrib": "17:40",
+    "ishaLabel": "العشاء",
+    "isha": "19:10"
+  }
+}

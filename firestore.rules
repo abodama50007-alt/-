@@ -1,0 +1,1113 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isVerifiedUser()
+        && request.auth.token.email == 'abodama50007@gmail.com';
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'email', 'photoURL', 'createdAt', 'updatedAt'])
+        && isValidId(data.uid)
+        && data.uid == request.auth.uid
+        && data.displayName is string
+        && data.displayName.size() >= 1
+        && data.displayName.size() <= 120
+        && (!data.keys().hasAny(['email']) || (data.email is string && data.email.size() <= 200))
+        && (!data.keys().hasAny(['photoURL']) || (data.photoURL is string && data.photoURL.size() <= 500))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUserSyncState(data) {
+      return data.keys().hasAll([
+          'uid',
+          'totalTasbeehCount',
+          'khatmahCurrentPage',
+          'khatmahTargetDays',
+          'khatmahCompletedJuz',
+          'lastReadSurah',
+          'lastReadSurahName',
+          'lastReadAyah',
+          'lastReadPage',
+          'lastReadJuz',
+          'reciterId',
+          'tafsirEdition',
+          'readingMode',
+          'fontSize',
+          'themeMode',
+          'adhanId',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'totalTasbeehCount',
+          'khatmahCurrentPage',
+          'khatmahTargetDays',
+          'khatmahCompletedJuz',
+          'lastReadSurah',
+          'lastReadSurahName',
+          'lastReadAyah',
+          'lastReadPage',
+          'lastReadJuz',
+          'reciterId',
+          'tafsirEdition',
+          'readingMode',
+          'fontSize',
+          'themeMode',
+          'adhanId',
+          'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && data.uid == request.auth.uid
+        && data.totalTasbeehCount is int && data.totalTasbeehCount >= 0 && data.totalTasbeehCount <= 10000000
+        && data.khatmahCurrentPage is int && data.khatmahCurrentPage >= 1 && data.khatmahCurrentPage <= 604
+        && data.khatmahTargetDays is int && data.khatmahTargetDays >= 1 && data.khatmahTargetDays <= 365
+        && data.khatmahCompletedJuz is list && data.khatmahCompletedJuz.size() <= 30
+        && (data.khatmahCompletedJuz.size() == 0 || data.khatmahCompletedJuz[0] is int)
+        && data.lastReadSurah is int && data.lastReadSurah >= 1 && data.lastReadSurah <= 114
+        && data.lastReadSurahName is string && data.lastReadSurahName.size() >= 1 && data.lastReadSurahName.size() <= 120
+        && data.lastReadAyah is int && data.lastReadAyah >= 1 && data.lastReadAyah <= 286
+        && data.lastReadPage is int && data.lastReadPage >= 1 && data.lastReadPage <= 604
+        && data.lastReadJuz is int && data.lastReadJuz >= 1 && data.lastReadJuz <= 30
+        && data.reciterId is string && data.reciterId.size() >= 1 && data.reciterId.size() <= 120
+        && data.tafsirEdition is string && data.tafsirEdition.size() <= 40 && data.tafsirEdition in ['ar.muyassar', 'ar.jalalayn', 'en.sahih']
+        && data.readingMode is string && data.readingMode.size() <= 20 && data.readingMode in ['verses', 'page']
+        && data.fontSize is int && data.fontSize >= 16 && data.fontSize <= 56
+        && data.themeMode is string && data.themeMode.size() <= 20 && data.themeMode in ['auto', 'light', 'dark']
+        && data.adhanId is string && data.adhanId.size() >= 1 && data.adhanId.size() <= 64
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUserStreakState(data) {
+      return data.keys().hasAll([
+          'uid',
+          'currentStreak',
+          'longestStreak',
+          'lastActiveDate',
+          'totalActiveDays',
+          'totalStreakPoints',
+          'todayDate',
+          'todayQuranDone',
+          'todayTasbeehDone',
+          'todayRewardClaimed',
+          'celebratedMilestones',
+          'recentActiveDates',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'currentStreak',
+          'longestStreak',
+          'lastActiveDate',
+          'totalActiveDays',
+          'totalStreakPoints',
+          'todayDate',
+          'todayQuranDone',
+          'todayTasbeehDone',
+          'todayRewardClaimed',
+          'celebratedMilestones',
+          'recentActiveDates',
+          'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && data.uid == request.auth.uid
+        && data.currentStreak is int && data.currentStreak >= 0 && data.currentStreak <= 10000
+        && data.longestStreak is int && data.longestStreak >= 0 && data.longestStreak <= 10000
+        && data.lastActiveDate is string && data.lastActiveDate.size() <= 16
+        && data.totalActiveDays is int && data.totalActiveDays >= 0 && data.totalActiveDays <= 10000
+        && data.totalStreakPoints is int && data.totalStreakPoints >= 0 && data.totalStreakPoints <= 1000000
+        && data.todayDate is string && data.todayDate.size() <= 16
+        && data.todayQuranDone is bool
+        && data.todayTasbeehDone is bool
+        && data.todayRewardClaimed is bool
+        && data.celebratedMilestones is list && data.celebratedMilestones.size() <= 30
+        && (data.celebratedMilestones.size() == 0 || data.celebratedMilestones[0] is int)
+        && data.recentActiveDates is list && data.recentActiveDates.size() <= 35
+        && (data.recentActiveDates.size() == 0 || data.recentActiveDates[0] is string)
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUserHifzStats(data) {
+      return data.keys().hasAll([
+          'uid',
+          'totalPoints',
+          'quizzesCompleted',
+          'totalQuestionsAnswered',
+          'totalCorrect',
+          'bestScorePct',
+          'bestStreak',
+          'testedSurahs',
+          'testedJuzs',
+          'lastTestedLabel',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'totalPoints',
+          'quizzesCompleted',
+          'totalQuestionsAnswered',
+          'totalCorrect',
+          'bestScorePct',
+          'bestStreak',
+          'testedSurahs',
+          'testedJuzs',
+          'lastTestedLabel',
+          'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && data.uid == request.auth.uid
+        && data.totalPoints is int && data.totalPoints >= 0 && data.totalPoints <= 2000000
+        && data.quizzesCompleted is int && data.quizzesCompleted >= 0 && data.quizzesCompleted <= 100000
+        && data.totalQuestionsAnswered is int && data.totalQuestionsAnswered >= 0 && data.totalQuestionsAnswered <= 1000000
+        && data.totalCorrect is int && data.totalCorrect >= 0 && data.totalCorrect <= 1000000
+        && data.bestScorePct is int && data.bestScorePct >= 0 && data.bestScorePct <= 100
+        && data.bestStreak is int && data.bestStreak >= 0 && data.bestStreak <= 1000
+        && data.testedSurahs is list && data.testedSurahs.size() <= 114
+        && (data.testedSurahs.size() == 0 || data.testedSurahs[0] is int)
+        && data.testedJuzs is list && data.testedJuzs.size() <= 30
+        && (data.testedJuzs.size() == 0 || data.testedJuzs[0] is int)
+        && data.lastTestedLabel is string && data.lastTestedLabel.size() <= 120
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidBookmarkRecord(data) {
+      return data.keys().hasAll([
+          'uid',
+          'id',
+          'surahNumber',
+          'surahName',
+          'ayahNumberInSurah',
+          'globalAyahNumber',
+          'ayahPreview',
+          'page',
+          'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'id',
+          'surahNumber',
+          'surahName',
+          'ayahNumberInSurah',
+          'globalAyahNumber',
+          'ayahPreview',
+          'page',
+          'createdAt'
+        ])
+        && isValidId(data.uid)
+        && data.uid == request.auth.uid
+        && isValidId(data.id)
+        && data.id.size() <= 64
+        && data.surahNumber is int && data.surahNumber >= 1 && data.surahNumber <= 114
+        && data.surahName is string && data.surahName.size() >= 1 && data.surahName.size() <= 120
+        && data.ayahNumberInSurah is int && data.ayahNumberInSurah >= 1 && data.ayahNumberInSurah <= 286
+        && data.globalAyahNumber is int && data.globalAyahNumber >= 1 && data.globalAyahNumber <= 6236
+        && data.ayahPreview is string && data.ayahPreview.size() <= 1200
+        && data.page is int && data.page >= 1 && data.page <= 604
+        && data.createdAt is timestamp;
+    }
+
+    function isValidReflectionNoteRecord(data) {
+      return data.keys().hasAll([
+          'uid',
+          'id',
+          'surahNumber',
+          'surahName',
+          'ayahNumberInSurah',
+          'note',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'id',
+          'surahNumber',
+          'surahName',
+          'ayahNumberInSurah',
+          'note',
+          'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && data.uid == request.auth.uid
+        && isValidId(data.id)
+        && data.id.size() <= 64
+        && data.surahNumber is int && data.surahNumber >= 1 && data.surahNumber <= 114
+        && data.surahName is string && data.surahName.size() >= 1 && data.surahName.size() <= 120
+        && data.ayahNumberInSurah is int && data.ayahNumberInSurah >= 1 && data.ayahNumberInSurah <= 286
+        && data.note is string && data.note.size() >= 1 && data.note.size() <= 2000
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidRoomCode(code) {
+      return code is string && code.size() >= 6 && code.size() <= 12 && code.matches('^[A-Z0-9]{6,12}$');
+    }
+
+    function isValidCompanionRoom(data) {
+      return data.keys().hasAll([
+          'roomCode',
+          'title',
+          'hostUid',
+          'hostName',
+          'guestUid',
+          'guestName',
+          'status',
+          'mode',
+          'questionIds',
+          'hostScore',
+          'guestScore',
+          'hostAnsweredCount',
+          'guestAnsweredCount',
+          'sharedSurahNumber',
+          'sharedAyahNumber',
+          'currentQuestionIndex',
+          'hostAnswerForCurrent',
+          'guestAnswerForCurrent',
+          'hostReady',
+          'guestReady',
+          'questionStartedAtMs',
+          'liveEventText',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'roomCode',
+          'title',
+          'hostUid',
+          'hostName',
+          'guestUid',
+          'guestName',
+          'status',
+          'mode',
+          'questionIds',
+          'hostScore',
+          'guestScore',
+          'hostAnsweredCount',
+          'guestAnsweredCount',
+          'sharedSurahNumber',
+          'sharedAyahNumber',
+          'currentQuestionIndex',
+          'hostAnswerForCurrent',
+          'guestAnswerForCurrent',
+          'hostReady',
+          'guestReady',
+          'questionStartedAtMs',
+          'liveEventText',
+          'createdAt',
+          'updatedAt'
+        ])
+        && isValidRoomCode(data.roomCode)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 100
+        && isValidId(data.hostUid)
+        && data.hostName is string && data.hostName.size() >= 1 && data.hostName.size() <= 80
+        && data.guestUid is string && data.guestUid.size() <= 128
+        && (data.guestUid == '' || (isValidId(data.guestUid) && data.guestUid != data.hostUid))
+        && data.guestName is string && data.guestName.size() <= 80
+        && data.status is string && data.status in ['waiting', 'active', 'finished']
+        && data.mode is string && data.mode in ['hifz', 'sunnah', 'mixed']
+        && data.questionIds is list && data.questionIds.size() >= 1 && data.questionIds.size() <= 12
+        && data.questionIds[0] is string
+        && data.hostScore is int && data.hostScore >= 0 && data.hostScore <= 1200
+        && data.guestScore is int && data.guestScore >= 0 && data.guestScore <= 1200
+        && data.hostAnsweredCount is int && data.hostAnsweredCount >= 0 && data.hostAnsweredCount <= 12
+        && data.guestAnsweredCount is int && data.guestAnsweredCount >= 0 && data.guestAnsweredCount <= 12
+        && data.sharedSurahNumber is int && data.sharedSurahNumber >= 1 && data.sharedSurahNumber <= 114
+        && data.sharedAyahNumber is int && data.sharedAyahNumber >= 1 && data.sharedAyahNumber <= 286
+        && data.currentQuestionIndex is int && data.currentQuestionIndex >= 0 && data.currentQuestionIndex <= 12
+        && data.hostAnswerForCurrent is int && data.hostAnswerForCurrent >= -2 && data.hostAnswerForCurrent <= 3
+        && data.guestAnswerForCurrent is int && data.guestAnswerForCurrent >= -2 && data.guestAnswerForCurrent <= 3
+        && data.hostReady is bool
+        && data.guestReady is bool
+        && data.questionStartedAtMs is int && data.questionStartedAtMs >= 0 && data.questionStartedAtMs <= 9999999999999
+        && data.liveEventText is string && data.liveEventText.size() <= 200
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCompanionMessage(data) {
+      return data.keys().hasAll([
+          'id',
+          'uid',
+          'senderName',
+          'kind',
+          'text',
+          'surahNumber',
+          'ayahNumber',
+          'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'uid',
+          'senderName',
+          'kind',
+          'text',
+          'surahNumber',
+          'ayahNumber',
+          'createdAt'
+        ])
+        && isValidId(data.id) && data.id.size() <= 64
+        && isValidId(data.uid) && data.uid == request.auth.uid
+        && data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 80
+        && data.kind is string && data.kind in ['chat', 'nudge', 'ayah_share']
+        && data.text is string && data.text.size() >= 1 && data.text.size() <= 400
+        && data.surahNumber is int && data.surahNumber >= 1 && data.surahNumber <= 114
+        && data.ayahNumber is int && data.ayahNumber >= 1 && data.ayahNumber <= 286
+        && data.createdAt is timestamp;
+    }
+
+    function isValidLeaderboardEntry(data) {
+      return data.keys().hasAll([
+          'uid',
+          'displayName',
+          'photoURL',
+          'weekKey',
+          'monthKey',
+          'weeklyPoints',
+          'monthlyPoints',
+          'totalPoints',
+          'winsCount',
+          'roundsCount',
+          'bestStreak',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'displayName',
+          'photoURL',
+          'weekKey',
+          'monthKey',
+          'weeklyPoints',
+          'monthlyPoints',
+          'totalPoints',
+          'winsCount',
+          'roundsCount',
+          'bestStreak',
+          'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80
+        && data.photoURL is string && data.photoURL.size() <= 500
+        && data.weekKey is string && data.weekKey.size() >= 4 && data.weekKey.size() <= 16
+        && data.monthKey is string && data.monthKey.size() >= 6 && data.monthKey.size() <= 10
+        && data.weeklyPoints is int && data.weeklyPoints >= 0 && data.weeklyPoints <= 50000
+        && data.monthlyPoints is int && data.monthlyPoints >= 0 && data.monthlyPoints <= 200000
+        && data.totalPoints is int && data.totalPoints >= 0 && data.totalPoints <= 2000000
+        && data.winsCount is int && data.winsCount >= 0 && data.winsCount <= 50000
+        && data.roundsCount is int && data.roundsCount >= 0 && data.roundsCount <= 100000
+        && data.bestStreak is int && data.bestStreak >= 0 && data.bestStreak <= 500
+        && data.updatedAt is timestamp;
+    }
+
+    function isRoomParticipant(roomCode) {
+      return isVerifiedUser()
+        && exists(/databases/$(database)/documents/companionRooms/$(roomCode))
+        && (
+          get(/databases/$(database)/documents/companionRooms/$(roomCode)).data.hostUid == request.auth.uid
+          || (
+            get(/databases/$(database)/documents/companionRooms/$(roomCode)).data.guestUid != ''
+            && get(/databases/$(database)/documents/companionRooms/$(roomCode)).data.guestUid == request.auth.uid
+          )
+        );
+    }
+
+    function isValidGroupCode(code) {
+      return code is string && code.size() >= 6 && code.size() <= 12 && code.matches('^[A-Z0-9]{6,12}$');
+    }
+
+    function isValidGroupKhatmah(data) {
+      return data.keys().hasAll([
+          'groupCode',
+          'title',
+          'description',
+          'creatorUid',
+          'creatorName',
+          'targetDays',
+          'memberUids',
+          'status',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'groupCode',
+          'title',
+          'description',
+          'creatorUid',
+          'creatorName',
+          'targetDays',
+          'memberUids',
+          'status',
+          'createdAt',
+          'updatedAt'
+        ])
+        && isValidGroupCode(data.groupCode)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 100
+        && data.description is string && data.description.size() <= 200
+        && isValidId(data.creatorUid)
+        && data.creatorName is string && data.creatorName.size() >= 1 && data.creatorName.size() <= 80
+        && data.targetDays is int && data.targetDays >= 1 && data.targetDays <= 365
+        && data.memberUids is list && data.memberUids.size() >= 1 && data.memberUids.size() <= 50
+        && data.memberUids[0] is string
+        && data.status is string && data.status in ['active', 'completed']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidGroupKhatmahMember(data) {
+      return data.keys().hasAll([
+          'uid',
+          'groupCode',
+          'displayName',
+          'photoURL',
+          'completedJuz',
+          'currentPage',
+          'joinedAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'groupCode',
+          'displayName',
+          'photoURL',
+          'completedJuz',
+          'currentPage',
+          'joinedAt',
+          'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && isValidGroupCode(data.groupCode)
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80
+        && data.photoURL is string && data.photoURL.size() <= 500
+        && data.completedJuz is list && data.completedJuz.size() <= 30
+        && (data.completedJuz.size() == 0 || data.completedJuz[0] is int)
+        && data.currentPage is int && data.currentPage >= 1 && data.currentPage <= 604
+        && data.joinedAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isGroupKhatmahMember(groupCode) {
+      return isVerifiedUser()
+        && exists(/databases/$(database)/documents/groupKhatmahs/$(groupCode))
+        && request.auth.uid in get(/databases/$(database)/documents/groupKhatmahs/$(groupCode)).data.memberUids;
+    }
+
+    function isValidPersonalKhatmah(data) {
+      return data.keys().hasAll([
+          'uid',
+          'id',
+          'name',
+          'targetDays',
+          'currentPage',
+          'completedJuz',
+          'startedAtMs',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'id',
+          'name',
+          'targetDays',
+          'currentPage',
+          'completedJuz',
+          'startedAtMs',
+          'createdAt',
+          'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && data.uid == request.auth.uid
+        && isValidId(data.id)
+        && data.id.size() <= 64
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 80
+        && data.targetDays is int && data.targetDays >= 1 && data.targetDays <= 365
+        && data.currentPage is int && data.currentPage >= 1 && data.currentPage <= 604
+        && data.completedJuz is list && data.completedJuz.size() <= 30
+        && (data.completedJuz.size() == 0 || data.completedJuz[0] is int)
+        && data.startedAtMs is int && data.startedAtMs >= 0 && data.startedAtMs <= 9999999999999
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(userId)
+        && isVerifiedUser()
+        && isOwner(userId)
+        && isValidUserProfile(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId)
+        && isVerifiedUser()
+        && isOwner(userId)
+        && isValidUserProfile(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email', 'photoURL', 'updatedAt']);
+      allow delete: if isValidId(userId) && isOwner(userId);
+
+      match /sync/state {
+        allow get: if isValidId(userId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidUserSyncState(incoming())
+          && incoming().updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidUserSyncState(incoming())
+          && incoming().uid == existing().uid
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'totalTasbeehCount',
+            'khatmahCurrentPage',
+            'khatmahTargetDays',
+            'khatmahCompletedJuz',
+            'lastReadSurah',
+            'lastReadSurahName',
+            'lastReadAyah',
+            'lastReadPage',
+            'lastReadJuz',
+            'reciterId',
+            'tafsirEdition',
+            'readingMode',
+            'fontSize',
+            'themeMode',
+            'adhanId',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isOwner(userId);
+      }
+
+      match /sync/streak {
+        allow get: if isValidId(userId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidUserStreakState(incoming())
+          && incoming().updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidUserStreakState(incoming())
+          && incoming().uid == existing().uid
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'currentStreak',
+            'longestStreak',
+            'lastActiveDate',
+            'totalActiveDays',
+            'totalStreakPoints',
+            'todayDate',
+            'todayQuranDone',
+            'todayTasbeehDone',
+            'todayRewardClaimed',
+            'celebratedMilestones',
+            'recentActiveDates',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isOwner(userId);
+      }
+
+      match /sync/hifz {
+        allow get: if isValidId(userId) && isOwner(userId);
+        allow create: if isValidId(userId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidUserHifzStats(incoming())
+          && incoming().updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidUserHifzStats(incoming())
+          && incoming().uid == existing().uid
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'totalPoints',
+            'quizzesCompleted',
+            'totalQuestionsAnswered',
+            'totalCorrect',
+            'bestScorePct',
+            'bestStreak',
+            'testedSurahs',
+            'testedJuzs',
+            'lastTestedLabel',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isOwner(userId);
+      }
+
+      match /bookmarks/{bookmarkId} {
+        allow get: if isValidId(userId) && isValidId(bookmarkId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow create: if isValidId(userId)
+          && isValidId(bookmarkId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidBookmarkRecord(incoming())
+          && incoming().id == bookmarkId
+          && incoming().createdAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(bookmarkId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidBookmarkRecord(incoming())
+          && incoming().uid == existing().uid
+          && incoming().id == existing().id
+          && incoming().createdAt == existing().createdAt
+          && incoming().diff(existing()).affectedKeys().hasOnly(['ayahPreview', 'page']);
+        allow delete: if isValidId(userId) && isValidId(bookmarkId) && isOwner(userId);
+      }
+
+      match /notes/{noteId} {
+        allow get: if isValidId(userId) && isValidId(noteId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow create: if isValidId(userId)
+          && isValidId(noteId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidReflectionNoteRecord(incoming())
+          && incoming().id == noteId
+          && incoming().updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(noteId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidReflectionNoteRecord(incoming())
+          && incoming().uid == existing().uid
+          && incoming().id == existing().id
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['note', 'updatedAt']);
+        allow delete: if isValidId(userId) && isValidId(noteId) && isOwner(userId);
+      }
+
+      match /khatmahs/{khatmahId} {
+        allow get: if isValidId(userId) && isValidId(khatmahId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow create: if isValidId(userId)
+          && isValidId(khatmahId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidPersonalKhatmah(incoming())
+          && incoming().id == khatmahId
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time;
+        allow update: if isValidId(userId)
+          && isValidId(khatmahId)
+          && isVerifiedUser()
+          && isOwner(userId)
+          && isValidPersonalKhatmah(incoming())
+          && incoming().uid == existing().uid
+          && incoming().id == existing().id
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'name',
+            'targetDays',
+            'currentPage',
+            'completedJuz',
+            'startedAtMs',
+            'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(khatmahId) && isVerifiedUser() && isOwner(userId);
+      }
+    }
+
+    match /companionRooms/{roomCode} {
+      allow get: if isValidRoomCode(roomCode)
+        && isVerifiedUser()
+        && (
+          resource == null
+          || existing().hostUid == request.auth.uid
+          || (existing().guestUid != '' && existing().guestUid == request.auth.uid)
+          || (existing().status == 'waiting' && existing().guestUid == '')
+        );
+      allow list: if isVerifiedUser()
+        && (
+          resource.data.hostUid == request.auth.uid
+          || resource.data.guestUid == request.auth.uid
+        );
+      allow create: if isValidRoomCode(roomCode)
+        && isVerifiedUser()
+        && isValidCompanionRoom(incoming())
+        && incoming().roomCode == roomCode
+        && incoming().hostUid == request.auth.uid
+        && incoming().guestUid == ''
+        && incoming().guestName == ''
+        && incoming().status == 'waiting'
+        && incoming().hostScore == 0
+        && incoming().guestScore == 0
+        && incoming().hostAnsweredCount == 0
+        && incoming().guestAnsweredCount == 0
+        && incoming().currentQuestionIndex == 0
+        && incoming().hostAnswerForCurrent == -1
+        && incoming().guestAnswerForCurrent == -1
+        && incoming().hostReady == true
+        && incoming().guestReady == false
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidRoomCode(roomCode)
+        && isVerifiedUser()
+        && isValidCompanionRoom(incoming())
+        && incoming().roomCode == existing().roomCode
+        && incoming().hostUid == existing().hostUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Friend joins waiting room
+          (
+            existing().status == 'waiting'
+            && existing().guestUid == ''
+            && existing().hostUid != request.auth.uid
+            && incoming().guestUid == request.auth.uid
+            && incoming().guestName.size() >= 1
+            && incoming().guestReady == true
+            && incoming().status == 'active'
+            && incoming().currentQuestionIndex == 0
+            && incoming().hostAnswerForCurrent == -1
+            && incoming().guestAnswerForCurrent == -1
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'guestUid',
+              'guestName',
+              'guestReady',
+              'status',
+              'questionStartedAtMs',
+              'liveEventText',
+              'updatedAt'
+            ])
+          )
+          // Action 2: Host answers current question or shares Ayah
+          || (
+            existing().status in ['waiting', 'active']
+            && existing().hostUid == request.auth.uid
+            && incoming().hostScore >= existing().hostScore
+            && incoming().hostScore <= existing().hostScore + 25
+            && incoming().hostAnsweredCount >= existing().hostAnsweredCount
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'hostScore',
+              'hostAnsweredCount',
+              'hostAnswerForCurrent',
+              'hostReady',
+              'status',
+              'liveEventText',
+              'sharedSurahNumber',
+              'sharedAyahNumber',
+              'updatedAt'
+            ])
+          )
+          // Action 3: Guest answers current question or shares Ayah
+          || (
+            existing().status in ['waiting', 'active']
+            && existing().guestUid != ''
+            && existing().guestUid == request.auth.uid
+            && incoming().guestScore >= existing().guestScore
+            && incoming().guestScore <= existing().guestScore + 25
+            && incoming().guestAnsweredCount >= existing().guestAnsweredCount
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'guestScore',
+              'guestAnsweredCount',
+              'guestAnswerForCurrent',
+              'guestReady',
+              'status',
+              'liveEventText',
+              'sharedSurahNumber',
+              'sharedAyahNumber',
+              'updatedAt'
+            ])
+          )
+          // Action 4: Either participant advances synchronized question or finishes round once both answered
+          || (
+            existing().status == 'active'
+            && existing().guestUid != ''
+            && (
+              existing().hostUid == request.auth.uid
+              || existing().guestUid == request.auth.uid
+            )
+            && existing().hostAnswerForCurrent != -1
+            && existing().guestAnswerForCurrent != -1
+            && (
+              (
+                incoming().currentQuestionIndex == existing().currentQuestionIndex + 1
+                && incoming().currentQuestionIndex < existing().questionIds.size()
+                && incoming().hostAnswerForCurrent == -1
+                && incoming().guestAnswerForCurrent == -1
+                && incoming().status == 'active'
+                && incoming().diff(existing()).affectedKeys().hasOnly([
+                  'currentQuestionIndex',
+                  'hostAnswerForCurrent',
+                  'guestAnswerForCurrent',
+                  'questionStartedAtMs',
+                  'liveEventText',
+                  'updatedAt'
+                ])
+              )
+              || (
+                existing().currentQuestionIndex + 1 >= existing().questionIds.size()
+                && incoming().status == 'finished'
+                && incoming().diff(existing()).affectedKeys().hasOnly([
+                  'status',
+                  'liveEventText',
+                  'updatedAt'
+                ])
+              )
+            )
+          )
+          // Action 5: Host starts a fresh rematch after finished round
+          || (
+            existing().status == 'finished'
+            && existing().hostUid == request.auth.uid
+            && incoming().hostScore == 0
+            && incoming().guestScore == 0
+            && incoming().hostAnsweredCount == 0
+            && incoming().guestAnsweredCount == 0
+            && incoming().currentQuestionIndex == 0
+            && incoming().hostAnswerForCurrent == -1
+            && incoming().guestAnswerForCurrent == -1
+            && (
+              (existing().guestUid == '' && incoming().status == 'waiting')
+              || (existing().guestUid != '' && incoming().status == 'active')
+            )
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'mode',
+              'questionIds',
+              'hostScore',
+              'guestScore',
+              'hostAnsweredCount',
+              'guestAnsweredCount',
+              'currentQuestionIndex',
+              'hostAnswerForCurrent',
+              'guestAnswerForCurrent',
+              'questionStartedAtMs',
+              'liveEventText',
+              'status',
+              'updatedAt'
+            ])
+          )
+        );
+      allow delete: if isValidRoomCode(roomCode)
+        && isVerifiedUser()
+        && existing().hostUid == request.auth.uid;
+
+      match /messages/{messageId} {
+        allow get: if isValidRoomCode(roomCode)
+          && isValidId(messageId)
+          && isRoomParticipant(roomCode);
+        allow list: if isValidRoomCode(roomCode)
+          && isRoomParticipant(roomCode);
+        allow create: if isValidRoomCode(roomCode)
+          && isValidId(messageId)
+          && isRoomParticipant(roomCode)
+          && isValidCompanionMessage(incoming())
+          && incoming().id == messageId
+          && incoming().createdAt == request.time;
+        allow update, delete: if false;
+      }
+    }
+
+    match /leaderboard/{userId} {
+      allow get: if isValidId(userId) && isVerifiedUser();
+      allow list: if isVerifiedUser();
+      allow create: if isValidId(userId)
+        && isVerifiedUser()
+        && isOwner(userId)
+        && isValidLeaderboardEntry(incoming())
+        && incoming().uid == request.auth.uid
+        && incoming().weeklyPoints <= 250
+        && incoming().monthlyPoints <= 250
+        && incoming().totalPoints <= 250
+        && incoming().winsCount <= 1
+        && incoming().roundsCount <= 1
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId)
+        && isVerifiedUser()
+        && isOwner(userId)
+        && isValidLeaderboardEntry(incoming())
+        && incoming().uid == existing().uid
+        && incoming().updatedAt == request.time
+        && incoming().totalPoints >= existing().totalPoints
+        && incoming().totalPoints <= existing().totalPoints + 250
+        && incoming().winsCount >= existing().winsCount
+        && incoming().winsCount <= existing().winsCount + 1
+        && incoming().roundsCount >= existing().roundsCount
+        && incoming().roundsCount <= existing().roundsCount + 1
+        && (
+          (
+            incoming().weekKey == existing().weekKey
+            && incoming().weeklyPoints >= existing().weeklyPoints
+            && incoming().weeklyPoints <= existing().weeklyPoints + 250
+          )
+          || (
+            incoming().weekKey != existing().weekKey
+            && incoming().weeklyPoints >= 0
+            && incoming().weeklyPoints <= 250
+          )
+        )
+        && (
+          (
+            incoming().monthKey == existing().monthKey
+            && incoming().monthlyPoints >= existing().monthlyPoints
+            && incoming().monthlyPoints <= existing().monthlyPoints + 250
+          )
+          || (
+            incoming().monthKey != existing().monthKey
+            && incoming().monthlyPoints >= 0
+            && incoming().monthlyPoints <= 250
+          )
+        )
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'displayName',
+          'photoURL',
+          'weekKey',
+          'monthKey',
+          'weeklyPoints',
+          'monthlyPoints',
+          'totalPoints',
+          'winsCount',
+          'roundsCount',
+          'bestStreak',
+          'updatedAt'
+        ]);
+      allow delete: if isValidId(userId) && isVerifiedUser() && isOwner(userId);
+    }
+
+    match /groupKhatmahs/{groupCode} {
+      allow get: if isValidGroupCode(groupCode)
+        && isVerifiedUser()
+        && (
+          resource == null
+          || existing().status == 'active'
+          || request.auth.uid in existing().memberUids
+        );
+      allow list: if isVerifiedUser()
+        && (
+          resource.data.creatorUid == request.auth.uid
+          || request.auth.uid in resource.data.memberUids
+        );
+      allow create: if isValidGroupCode(groupCode)
+        && isVerifiedUser()
+        && isValidGroupKhatmah(incoming())
+        && incoming().groupCode == groupCode
+        && incoming().creatorUid == request.auth.uid
+        && incoming().memberUids.size() == 1
+        && request.auth.uid in incoming().memberUids
+        && incoming().status == 'active'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidGroupCode(groupCode)
+        && isVerifiedUser()
+        && isValidGroupKhatmah(incoming())
+        && incoming().groupCode == existing().groupCode
+        && incoming().creatorUid == existing().creatorUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Verified user joins an active group
+          (
+            existing().status == 'active'
+            && !(request.auth.uid in existing().memberUids)
+            && existing().memberUids.size() < 50
+            && incoming().memberUids.size() == existing().memberUids.size() + 1
+            && incoming().memberUids.hasAll(existing().memberUids)
+            && request.auth.uid in incoming().memberUids
+            && incoming().diff(existing()).affectedKeys().hasOnly(['memberUids', 'updatedAt'])
+          )
+          // Action 2: Creator edits group details or any member updates completion status
+          || (
+            request.auth.uid in existing().memberUids
+            && (
+              (
+                existing().creatorUid == request.auth.uid
+                && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'targetDays', 'status', 'updatedAt'])
+              )
+              || incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+            )
+          )
+          // Action 3: Non-creator leaves the group
+          || (
+            request.auth.uid in existing().memberUids
+            && existing().creatorUid != request.auth.uid
+            && !(request.auth.uid in incoming().memberUids)
+            && incoming().memberUids.size() == existing().memberUids.size() - 1
+            && existing().memberUids.hasAll(incoming().memberUids)
+            && incoming().diff(existing()).affectedKeys().hasOnly(['memberUids', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidGroupCode(groupCode)
+        && isVerifiedUser()
+        && existing().creatorUid == request.auth.uid;
+
+      match /members/{memberId} {
+        allow get: if isValidGroupCode(groupCode)
+          && isValidId(memberId)
+          && isGroupKhatmahMember(groupCode);
+        allow list: if isValidGroupCode(groupCode)
+          && isGroupKhatmahMember(groupCode);
+        allow create: if isValidGroupCode(groupCode)
+          && isValidId(memberId)
+          && isOwner(memberId)
+          && isGroupKhatmahMember(groupCode)
+          && isValidGroupKhatmahMember(incoming())
+          && incoming().uid == memberId
+          && incoming().groupCode == groupCode
+          && incoming().joinedAt == request.time
+          && incoming().updatedAt == request.time;
+        allow update: if isValidGroupCode(groupCode)
+          && isValidId(memberId)
+          && isOwner(memberId)
+          && isGroupKhatmahMember(groupCode)
+          && isValidGroupKhatmahMember(incoming())
+          && incoming().uid == existing().uid
+          && incoming().groupCode == existing().groupCode
+          && incoming().joinedAt == existing().joinedAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'displayName',
+            'photoURL',
+            'completedJuz',
+            'currentPage',
+            'updatedAt'
+          ]);
+        allow delete: if isValidGroupCode(groupCode)
+          && isValidId(memberId)
+          && isVerifiedUser()
+          && (
+            isOwner(memberId)
+            || (
+              exists(/databases/$(database)/documents/groupKhatmahs/$(groupCode))
+              && get(/databases/$(database)/documents/groupKhatmahs/$(groupCode)).data.creatorUid == request.auth.uid
+            )
+          );
+      }
+    }
+  }
+}

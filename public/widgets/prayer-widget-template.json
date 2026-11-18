@@ -1,0 +1,263 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "rtl": true,
+  "widgetTheme": {
+    "id": "emerald",
+    "primaryBg": "#14532D",
+    "secondaryBg": "#0B2E19",
+    "accentColor": "#FCD34D",
+    "textColor": "#FBF8F1",
+    "isLight": false
+  },
+  "body": [
+    {
+      "type": "Container",
+      "style": "emphasis",
+      "bleed": true,
+      "backgroundImage": {
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22420%22%20viewBox%3D%220%200%20800%20420%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2314532D%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230B2E19%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22420%22%20rx%3D%2228%22%20fill%3D%22url(%23g)%22%2F%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%22788%22%20height%3D%22408%22%20rx%3D%2224%22%20fill%3D%22none%22%20stroke%3D%22%23FCD34D%22%20stroke-opacity%3D%220.35%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E",
+        "fillMode": "Cover"
+      },
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${appName}",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Warning"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${hijriDate}",
+                  "size": "Large",
+                  "weight": "Bolder",
+                  "color": "Light",
+                  "wrap": true,
+                  "spacing": "Small"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${gregorianDate} • ${location}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true,
+                  "wrap": true,
+                  "spacing": "None"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "verticalContentAlignment": "Center",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${nextPrayerLabel}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true,
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${nextPrayerName} • ${nextPrayerTime}",
+                  "size": "Medium",
+                  "weight": "Bolder",
+                  "color": "Warning",
+                  "horizontalAlignment": "Right",
+                  "spacing": "None"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${remainingLabel}",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Good",
+                  "horizontalAlignment": "Right",
+                  "spacing": "None"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "spacing": "Medium",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.fajrLabel}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true,
+                  "horizontalAlignment": "Center"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.fajr}",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Light",
+                  "horizontalAlignment": "Center",
+                  "spacing": "None"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.dhuhrLabel}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true,
+                  "horizontalAlignment": "Center"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.dhuhr}",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Light",
+                  "horizontalAlignment": "Center",
+                  "spacing": "None"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.asrLabel}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true,
+                  "horizontalAlignment": "Center"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.asr}",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Light",
+                  "horizontalAlignment": "Center",
+                  "spacing": "None"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.maghribLabel}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true,
+                  "horizontalAlignment": "Center"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.maghrib}",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Light",
+                  "horizontalAlignment": "Center",
+                  "spacing": "None"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.ishaLabel}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true,
+                  "horizontalAlignment": "Center"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.isha}",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Light",
+                  "horizontalAlignment": "Center",
+                  "spacing": "None"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "spacing": "Small",
+          "separator": true,
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${prayers.sunriseLabel}: ${prayers.sunrise}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${lastUpdatedLabel}",
+                  "size": "Small",
+                  "color": "Light",
+                  "isSubtle": true,
+                  "horizontalAlignment": "Right"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "فتح ودجيت الصلاة والتاريخ",
+      "url": "/?mode=widget&theme=emerald"
+    },
+    {
+      "type": "Action.Execute",
+      "title": "تحديث المواقيت",
+      "verb": "refresh"
+    }
+  ]
+}

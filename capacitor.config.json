@@ -1,0 +1,18 @@
+{
+  "appId": "com.mushaf.jamee",
+  "appName": "المصحف الجامع",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "https",
+    "cleartext": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1800,
+      "backgroundColor": "#14532D",
+      "showSpinner": false
+    }
+  }
+}

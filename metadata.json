@@ -1,0 +1,11 @@
+{
+  "name": "المصحف الجامع",
+  "description": "تطبيق قرآني متكامل لقراءة القرآن الكريم بالرسم العثماني، الاستماع للتلاوات، مطالعة التفسير، البحث الشامل، متابعة الختمة، والأذكار والتسبيح.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

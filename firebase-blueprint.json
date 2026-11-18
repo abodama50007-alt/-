@@ -1,0 +1,953 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user profile information stored privately per user",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Authentication user UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name",
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address",
+          "maxLength": 200
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Profile avatar URL",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp"
+        }
+      },
+      "required": ["uid", "displayName", "createdAt", "updatedAt"]
+    },
+    "UserSyncState": {
+      "title": "UserSyncState",
+      "description": "Synchronized Quran reading preferences, khatmah progress, reminders, and tasbeeh count",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "totalTasbeehCount": {
+          "type": "integer",
+          "description": "Total cumulative tasbeeh count"
+        },
+        "khatmahCurrentPage": {
+          "type": "integer",
+          "description": "Current Mushaf page 1..604"
+        },
+        "khatmahTargetDays": {
+          "type": "integer",
+          "description": "Target days for current khatmah"
+        },
+        "khatmahCompletedJuz": {
+          "type": "array",
+          "description": "List of completed Juz numbers 1..30"
+        },
+        "lastReadSurah": {
+          "type": "integer",
+          "description": "Last read Surah number"
+        },
+        "lastReadSurahName": {
+          "type": "string",
+          "description": "Last read Surah Arabic name",
+          "maxLength": 120
+        },
+        "lastReadAyah": {
+          "type": "integer",
+          "description": "Last read ayah number in surah"
+        },
+        "lastReadPage": {
+          "type": "integer",
+          "description": "Last read Mushaf page"
+        },
+        "lastReadJuz": {
+          "type": "integer",
+          "description": "Last read Juz"
+        },
+        "reciterId": {
+          "type": "string",
+          "description": "Preferred Quran reciter identifier",
+          "maxLength": 120
+        },
+        "tafsirEdition": {
+          "type": "string",
+          "description": "Preferred Tafsir edition",
+          "enum": ["ar.muyassar", "ar.jalalayn", "en.sahih"],
+          "maxLength": 40
+        },
+        "readingMode": {
+          "type": "string",
+          "description": "Preferred reading layout",
+          "enum": ["verses", "page"],
+          "maxLength": 20
+        },
+        "fontSize": {
+          "type": "integer",
+          "description": "Quranic text font size in px"
+        },
+        "themeMode": {
+          "type": "string",
+          "description": "Theme preference",
+          "enum": ["auto", "light", "dark"],
+          "maxLength": 20
+        },
+        "adhanId": {
+          "type": "string",
+          "description": "Selected Adhan sound identifier",
+          "maxLength": 64
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "totalTasbeehCount",
+        "khatmahCurrentPage",
+        "khatmahTargetDays",
+        "khatmahCompletedJuz",
+        "lastReadSurah",
+        "lastReadSurahName",
+        "lastReadAyah",
+        "lastReadPage",
+        "lastReadJuz",
+        "reciterId",
+        "tafsirEdition",
+        "readingMode",
+        "fontSize",
+        "themeMode",
+        "adhanId",
+        "updatedAt"
+      ]
+    },
+    "BookmarkRecord": {
+      "title": "BookmarkRecord",
+      "description": "Saved Quran ayah bookmark",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "id": {
+          "type": "string",
+          "description": "Bookmark ID",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "surahNumber": {
+          "type": "integer",
+          "description": "Surah number 1..114"
+        },
+        "surahName": {
+          "type": "string",
+          "description": "Surah name",
+          "maxLength": 120
+        },
+        "ayahNumberInSurah": {
+          "type": "integer",
+          "description": "Ayah number within surah"
+        },
+        "globalAyahNumber": {
+          "type": "integer",
+          "description": "Global ayah number 1..6236"
+        },
+        "ayahPreview": {
+          "type": "string",
+          "description": "Ayah text snippet",
+          "maxLength": 1200
+        },
+        "page": {
+          "type": "integer",
+          "description": "Mushaf page 1..604"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "id",
+        "surahNumber",
+        "surahName",
+        "ayahNumberInSurah",
+        "globalAyahNumber",
+        "ayahPreview",
+        "page",
+        "createdAt"
+      ]
+    },
+    "ReflectionNoteRecord": {
+      "title": "ReflectionNoteRecord",
+      "description": "Personal Tadabbur reflection note on an ayah",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "id": {
+          "type": "string",
+          "description": "Note ID",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "surahNumber": {
+          "type": "integer",
+          "description": "Surah number 1..114"
+        },
+        "surahName": {
+          "type": "string",
+          "description": "Surah name",
+          "maxLength": 120
+        },
+        "ayahNumberInSurah": {
+          "type": "integer",
+          "description": "Ayah number within surah"
+        },
+        "note": {
+          "type": "string",
+          "description": "User reflection text",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "id",
+        "surahNumber",
+        "surahName",
+        "ayahNumberInSurah",
+        "note",
+        "updatedAt"
+      ]
+    },
+    "CompanionRoom": {
+      "title": "CompanionRoom",
+      "description": "Real-time 2-player Quran memorization companion and live quiz competition room",
+      "type": "object",
+      "properties": {
+        "roomCode": {
+          "type": "string",
+          "description": "6-12 char uppercase room code matching doc ID",
+          "minLength": 6,
+          "maxLength": 12,
+          "pattern": "^[A-Z0-9]{6,12}$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Room title",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "hostUid": {
+          "type": "string",
+          "description": "Creator Firebase UID",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "hostName": {
+          "type": "string",
+          "description": "Creator display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "guestUid": {
+          "type": "string",
+          "description": "Joined friend Firebase UID or empty string while waiting",
+          "maxLength": 128
+        },
+        "guestName": {
+          "type": "string",
+          "description": "Joined friend display name or empty string while waiting",
+          "maxLength": 80
+        },
+        "status": {
+          "type": "string",
+          "enum": ["waiting", "active", "finished"],
+          "description": "Current room lifecycle state"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["hifz", "sunnah", "mixed"],
+          "description": "Quiz category mode"
+        },
+        "questionIds": {
+          "type": "array",
+          "description": "Ordered list of competition question IDs (1..12)"
+        },
+        "hostScore": {
+          "type": "integer",
+          "description": "Host cumulative score"
+        },
+        "guestScore": {
+          "type": "integer",
+          "description": "Guest cumulative score"
+        },
+        "hostAnsweredCount": {
+          "type": "integer",
+          "description": "Number of questions answered by host"
+        },
+        "guestAnsweredCount": {
+          "type": "integer",
+          "description": "Number of questions answered by guest"
+        },
+        "sharedSurahNumber": {
+          "type": "integer",
+          "description": "Shared Surah number 1..114 for co-memorization"
+        },
+        "sharedAyahNumber": {
+          "type": "integer",
+          "description": "Shared Ayah number 1..286 for co-memorization"
+        },
+        "currentQuestionIndex": {
+          "type": "integer",
+          "description": "Synchronized active question index 0..12"
+        },
+        "hostAnswerForCurrent": {
+          "type": "integer",
+          "description": "Host answer for currentQuestionIndex (-1 pending, -2 timeout, 0..3 option)"
+        },
+        "guestAnswerForCurrent": {
+          "type": "integer",
+          "description": "Guest answer for currentQuestionIndex (-1 pending, -2 timeout, 0..3 option)"
+        },
+        "hostReady": {
+          "type": "boolean",
+          "description": "Host live readiness state"
+        },
+        "guestReady": {
+          "type": "boolean",
+          "description": "Guest live readiness state"
+        },
+        "questionStartedAtMs": {
+          "type": "integer",
+          "description": "Synchronized start timestamp (epoch ms) for current question timer"
+        },
+        "liveEventText": {
+          "type": "string",
+          "description": "Latest live match event summary",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last update timestamp"
+        }
+      },
+      "required": [
+        "roomCode",
+        "title",
+        "hostUid",
+        "hostName",
+        "guestUid",
+        "guestName",
+        "status",
+        "mode",
+        "questionIds",
+        "hostScore",
+        "guestScore",
+        "hostAnsweredCount",
+        "guestAnsweredCount",
+        "sharedSurahNumber",
+        "sharedAyahNumber",
+        "currentQuestionIndex",
+        "hostAnswerForCurrent",
+        "guestAnswerForCurrent",
+        "hostReady",
+        "guestReady",
+        "questionStartedAtMs",
+        "liveEventText",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CompanionMessage": {
+      "title": "CompanionMessage",
+      "description": "Immutable chat, encouragement nudge, or shared Ayah notification inside a companion room",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Message ID matching doc ID",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "uid": {
+          "type": "string",
+          "description": "Sender UID",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "senderName": {
+          "type": "string",
+          "description": "Sender display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["chat", "nudge", "ayah_share"],
+          "description": "Message classification"
+        },
+        "text": {
+          "type": "string",
+          "description": "Arabic message content",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "surahNumber": {
+          "type": "integer",
+          "description": "Optional shared Surah number 1..114"
+        },
+        "ayahNumber": {
+          "type": "integer",
+          "description": "Optional shared Ayah number 1..286"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "uid",
+        "senderName",
+        "kind",
+        "text",
+        "surahNumber",
+        "ayahNumber",
+        "createdAt"
+      ]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Public zero-PII competition score summary for weekly, monthly, and all-time rankings",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Public display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Optional profile avatar URL or empty string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "weekKey": {
+          "type": "string",
+          "description": "ISO week key e.g. 2026-W47",
+          "minLength": 4,
+          "maxLength": 16
+        },
+        "monthKey": {
+          "type": "string",
+          "description": "Year-month key e.g. 2026-11",
+          "minLength": 6,
+          "maxLength": 10
+        },
+        "weeklyPoints": {
+          "type": "integer",
+          "description": "Points earned in the current weekKey"
+        },
+        "monthlyPoints": {
+          "type": "integer",
+          "description": "Points earned in the current monthKey"
+        },
+        "totalPoints": {
+          "type": "integer",
+          "description": "Cumulative competition points"
+        },
+        "winsCount": {
+          "type": "integer",
+          "description": "Cumulative competition wins"
+        },
+        "roundsCount": {
+          "type": "integer",
+          "description": "Cumulative completed competition rounds"
+        },
+        "bestStreak": {
+          "type": "integer",
+          "description": "Best correct answer streak"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last score update timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "photoURL",
+        "weekKey",
+        "monthKey",
+        "weeklyPoints",
+        "monthlyPoints",
+        "totalPoints",
+        "winsCount",
+        "roundsCount",
+        "bestStreak",
+        "updatedAt"
+      ]
+    },
+    "UserStreakState": {
+      "title": "UserStreakState",
+      "description": "User daily reading/tasbeeh streak counter, 7-day milestones, and daily reward status",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "currentStreak": {
+          "type": "integer",
+          "description": "Consecutive active days count"
+        },
+        "longestStreak": {
+          "type": "integer",
+          "description": "Longest consecutive streak achieved"
+        },
+        "lastActiveDate": {
+          "type": "string",
+          "description": "Last active local date YYYY-MM-DD or empty string",
+          "maxLength": 16
+        },
+        "totalActiveDays": {
+          "type": "integer",
+          "description": "Total cumulative active days"
+        },
+        "totalStreakPoints": {
+          "type": "integer",
+          "description": "Total points earned from daily streak rewards"
+        },
+        "todayDate": {
+          "type": "string",
+          "description": "Current tracked local date YYYY-MM-DD",
+          "maxLength": 16
+        },
+        "todayQuranDone": {
+          "type": "boolean",
+          "description": "Whether Quran reading was completed on todayDate"
+        },
+        "todayTasbeehDone": {
+          "type": "boolean",
+          "description": "Whether Tasbeeh or Azkar was completed on todayDate"
+        },
+        "todayRewardClaimed": {
+          "type": "boolean",
+          "description": "Whether todayDate reward points were claimed"
+        },
+        "celebratedMilestones": {
+          "type": "array",
+          "description": "List of celebrated 7-day streak milestones (max 30)"
+        },
+        "recentActiveDates": {
+          "type": "array",
+          "description": "Recent YYYY-MM-DD active dates (max 35)"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "currentStreak",
+        "longestStreak",
+        "lastActiveDate",
+        "totalActiveDays",
+        "totalStreakPoints",
+        "todayDate",
+        "todayQuranDone",
+        "todayTasbeehDone",
+        "todayRewardClaimed",
+        "celebratedMilestones",
+        "recentActiveDates",
+        "updatedAt"
+      ]
+    },
+    "GroupKhatmah": {
+      "title": "GroupKhatmah",
+      "description": "Shared multi-user Quran Khatmah reading group with bounded member list",
+      "type": "object",
+      "properties": {
+        "groupCode": {
+          "type": "string",
+          "description": "6-12 char uppercase group invite code matching doc ID",
+          "minLength": 6,
+          "maxLength": 12,
+          "pattern": "^[A-Z0-9]{6,12}$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Group Khatmah title",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional group note or goal",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "creatorUid": {
+          "type": "string",
+          "description": "Creator Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "creatorName": {
+          "type": "string",
+          "description": "Creator display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "targetDays": {
+          "type": "integer",
+          "description": "Target days for completing the shared Khatmah (1..365)"
+        },
+        "memberUids": {
+          "type": "array",
+          "description": "Bounded list of joined member UIDs (1..50)"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "completed"],
+          "description": "Group Khatmah status"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last update timestamp"
+        }
+      },
+      "required": [
+        "groupCode",
+        "title",
+        "description",
+        "creatorUid",
+        "creatorName",
+        "targetDays",
+        "memberUids",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "GroupKhatmahMember": {
+      "title": "GroupKhatmahMember",
+      "description": "Individual member reading progress inside a shared Group Khatmah",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Member Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "groupCode": {
+          "type": "string",
+          "description": "Parent group code",
+          "minLength": 6,
+          "maxLength": 12,
+          "pattern": "^[A-Z0-9]{6,12}$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Member display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Optional avatar URL or empty string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "completedJuz": {
+          "type": "array",
+          "description": "Completed Juz numbers 1..30 (max 30)"
+        },
+        "currentPage": {
+          "type": "integer",
+          "description": "Current Mushaf page 1..604"
+        },
+        "joinedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server join timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "groupCode",
+        "displayName",
+        "photoURL",
+        "completedJuz",
+        "currentPage",
+        "joinedAt",
+        "updatedAt"
+      ]
+    },
+    "PersonalKhatmah": {
+      "title": "PersonalKhatmah",
+      "description": "Individual named Quran Khatmah plan tracked independently per user",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "id": {
+          "type": "string",
+          "description": "Khatmah document ID matching path parameter",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Custom Khatmah title e.g. ختمة التدبر or ختمة الحفظ",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "targetDays": {
+          "type": "integer",
+          "description": "Planned days to complete the Khatmah (1..365)"
+        },
+        "currentPage": {
+          "type": "integer",
+          "description": "Current Mushaf page 1..604"
+        },
+        "completedJuz": {
+          "type": "array",
+          "description": "Completed Juz numbers 1..30 (max 30)"
+        },
+        "startedAtMs": {
+          "type": "integer",
+          "description": "Client start epoch timestamp in ms"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last update timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "id",
+        "name",
+        "targetDays",
+        "currentPage",
+        "completedJuz",
+        "startedAtMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserHifzStats": {
+      "title": "UserHifzStats",
+      "description": "Cumulative Hifz quiz achievement log per user tracking points, quizzes, accuracy, and tested Surahs/Juzs",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "totalPoints": {
+          "type": "integer",
+          "description": "Cumulative Hifz quiz points"
+        },
+        "quizzesCompleted": {
+          "type": "integer",
+          "description": "Total completed Hifz quizzes"
+        },
+        "totalQuestionsAnswered": {
+          "type": "integer",
+          "description": "Total Hifz quiz questions answered"
+        },
+        "totalCorrect": {
+          "type": "integer",
+          "description": "Total Hifz quiz questions answered correctly"
+        },
+        "bestScorePct": {
+          "type": "integer",
+          "description": "Best percentage score achieved (0..100)"
+        },
+        "bestStreak": {
+          "type": "integer",
+          "description": "Longest consecutive correct answers streak"
+        },
+        "testedSurahs": {
+          "type": "array",
+          "description": "Unique Surah numbers tested (1..114, max 114)"
+        },
+        "testedJuzs": {
+          "type": "array",
+          "description": "Unique Juz numbers tested (1..30, max 30)"
+        },
+        "lastTestedLabel": {
+          "type": "string",
+          "description": "Label of the most recently tested Surah or Juz",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "totalPoints",
+        "quizzesCompleted",
+        "totalQuestionsAnswered",
+        "totalCorrect",
+        "bestScorePct",
+        "bestStreak",
+        "testedSurahs",
+        "testedJuzs",
+        "lastTestedLabel",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user profile document"
+    },
+    "/users/{userId}/sync/state": {
+      "schema": { "$ref": "#/entities/UserSyncState" },
+      "description": "Synchronized reading preferences, khatmah progress, and Adhan choice"
+    },
+    "/users/{userId}/sync/streak": {
+      "schema": { "$ref": "#/entities/UserStreakState" },
+      "description": "Synchronized daily reading/tasbeeh streak counter and rewards"
+    },
+    "/users/{userId}/sync/hifz": {
+      "schema": { "$ref": "#/entities/UserHifzStats" },
+      "description": "Synchronized cumulative Hifz memorization quiz points and tested Surah/Juz achievement record"
+    },
+    "/users/{userId}/bookmarks/{bookmarkId}": {
+      "schema": { "$ref": "#/entities/BookmarkRecord" },
+      "description": "User saved Quran ayah bookmarks"
+    },
+    "/users/{userId}/notes/{noteId}": {
+      "schema": { "$ref": "#/entities/ReflectionNoteRecord" },
+      "description": "User saved Tadabbur reflection notes"
+    },
+    "/companionRooms/{roomCode}": {
+      "schema": { "$ref": "#/entities/CompanionRoom" },
+      "description": "Real-time 2-player Quran memorization companion and live quiz room"
+    },
+    "/companionRooms/{roomCode}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/CompanionMessage" },
+      "description": "Room messages, reminders, and shared verses between two connected friends"
+    },
+    "/leaderboard/{userId}": {
+      "schema": { "$ref": "#/entities/LeaderboardEntry" },
+      "description": "Public competition leaderboard entry with weekly, monthly, and total scores"
+    },
+    "/groupKhatmahs/{groupCode}": {
+      "schema": { "$ref": "#/entities/GroupKhatmah" },
+      "description": "Shared multi-user Quran Khatmah group metadata and membership"
+    },
+    "/groupKhatmahs/{groupCode}/members/{memberId}": {
+      "schema": { "$ref": "#/entities/GroupKhatmahMember" },
+      "description": "Per-member Juz and page progress inside a shared Group Khatmah"
+    },
+    "/users/{userId}/khatmahs/{khatmahId}": {
+      "schema": { "$ref": "#/entities/PersonalKhatmah" },
+      "description": "Multiple named personal Quran Khatmah plans tracked independently per user"
+    }
+  }
+}
